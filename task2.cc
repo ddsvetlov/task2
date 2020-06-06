@@ -42,7 +42,8 @@ double serial_access_time(int size, int step)
     }
 
     // start timer
-    auto start_time = std::chrono::high_resolution_clock::now();
+    ull time1 =rdtsc();
+    // auto start_time = std::chrono::high_resolution_clock::now();
 
     // access to random element in array  
     for (int i = 0; i < size; i += step)
@@ -52,8 +53,10 @@ double serial_access_time(int size, int step)
         sum += a[index];        
     }
  	// end timer
-    auto end_time = std::chrono::high_resolution_clock::now();
-    time += std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count();
+    // auto end_time = std::chrono::high_resolution_clock::now();
+    ull time2 = rdtsc();
+    time+=time2-time1;
+    // time += std::chrono::duration_cast<std::chrono::nanoseconds>(end_time - start_time).count();
     cout << "size: " << size * 4 << "    avg time: " << time / size * step << endl;
     delete[] a;
     // return avg speed
@@ -105,8 +108,8 @@ int main()
     list<double> timesList = {};
 
     int int_size = sizeof(int);
-    int array_size = 60000;
-    int steps_1 = 2400;
+    int array_size = 1;
+    int steps_1 = 100;
 
     cout << sizeof(int) << "bytes" << endl;
 
@@ -115,7 +118,7 @@ int main()
     {
         double time_count = serial_access_time(array_size, 1);
         bytesList.push_back(int_size * array_size);
-        array_size+=100;
+        array_size+=10000;
         timesList.push_back(time_count);
 
     }
