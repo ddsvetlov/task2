@@ -25,7 +25,7 @@ inline ull rdtsc()
 
 const int static_array_size = 1024;
 static int static_array[static_array_size];
-const int thread_num = 8;
+const int thread_num = 1;
 static double thread_time[thread_num];
 
 // 
@@ -105,8 +105,8 @@ int main()
     list<double> timesList = {};
 
     int int_size = sizeof(int);
-    int array_size = 1;
-    int steps_1 = 250;
+    int array_size = 60000;
+    int steps_1 = 2400;
 
     cout << sizeof(int) << "bytes" << endl;
 
@@ -115,7 +115,7 @@ int main()
     {
         double time_count = serial_access_time(array_size, 1);
         bytesList.push_back(int_size * array_size);
-        array_size++;
+        array_size+=100;
         timesList.push_back(time_count);
 
     }
