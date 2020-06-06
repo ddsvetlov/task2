@@ -168,10 +168,11 @@
 using namespace std;
 typedef list<int> LISTINT;
 
-long int get_time(int ArraySize,int StepSize) {
+long int get_time(int ArraySize,int StepSize, bool AccessType) {
 	// data
 	int *Array = new int[ArraySize];
 	int RandomIndex =0;
+	int Current =0;
 	struct timespec mt1, mt2;
 
 	// fill arr
@@ -182,10 +183,17 @@ long int get_time(int ArraySize,int StepSize) {
 	// start Timer
 	clock_gettime (CLOCK_REALTIME, &mt1);
 
-	// get Access to random Element
-	for (int i=0; i<ArraySize;i+=StepSize){
-		RandomIndex=rand()%ArraySize;
-		Array[RandomIndex]=1;
+	if (AccessType){
+		// get Access to random Element
+		for (int i=0; i<ArraySize;i+=StepSize){
+			RandomIndex=rand()%ArraySize;
+			Current=Array[RandomIndex];
+		}
+	}	
+	else {
+		for (int i=0; i<ArraySize;i+=StepSize){
+			Current=Array[i];
+		}
 	}
 	// end Timer
 	clock_gettime (CLOCK_REALTIME, &mt2);
@@ -196,20 +204,12 @@ long int get_time(int ArraySize,int StepSize) {
 }
 
 
-void write_data(std::list<int> DataSize, std::list<int> AccessTime){
-	ofstream x, y;
-
-    x.open("x.txt");
-    y.open("y.txt");
-
-    x << "";
-    y << "";
-
-    x.close();
-    y.close();
+void write_data(std::list<int> DataSize, std::list<int> RandomTime,  std::list<int> SerialTime){
+	ofstream x, y1, y2;
 
     x.open("x.txt", fstream::app);
-    y.open("y.txt", fstream::app);
+    y1.open("y1.txt", fstream::app);
+    y2.open("y2.txt", fstream::app);
 
 
     LISTINT::iterator i;
@@ -219,39 +219,48 @@ void write_data(std::list<int> DataSize, std::list<int> AccessTime){
         x << *i << ",";
     }
 
-    LISTINT::iterator d;
-
-    for (d = AccessTime.begin(); d != AccessTime.end(); ++d)
+    for (i = RandomTime.begin(); i != RandomTime.end(); ++i)
     {
-        y << *d << ",";
+        y1 << *i << ",";
     }
+
+    for (i = SerialTime.begin(); i != SerialTime.end(); ++i)
+    {
+        y2 << *i << ",";
+    }
+    
     x.close();
-    y.close();
+    y1.close();
+    y2.close();
 }
-
-
 
 
 int main() {
 	const int IntSize=sizeof(int);
-	int ArraySize = 7000;
+	int ArraySize = 1;
 	int StepSize = 1;
-	int NumberExp = 2000;
-	int StepExp = 100;
-	std::list<int> TimeAccess;
+	int NumberExp = 50;
+	int StepExp = 1000;
+	long int AccessTime = 0;
+	std::list<int> TimeAccessRandom;
 	std::list<int> DataSize;
+	std::list<int> TimeAccessSerial;
+	const bool RandomType = true;
+	const bool SerialType = false;
 
-	for (int i=0; i<NumberExp;i+=StepExp){
-		long int AccessTime = get_time(ArraySize, StepSize);
-		
-		TimeAccess.push_back(AccessTime);
-		DataSize.push_back(IntSize*ArraySize);
+	for (int i=0; i<NumberExp;i++){
+		// access to random index
+		AccessTime = get_time(ArraySize, StepSize, RandomType);
+		TimeAccessRandom.push_back(AccessTime);
 
+		// serial access
+		AccessTime = get_time(ArraySize, StepSize, SerialType);
+		TimeAccessSerial.push_back(AccessTime);
+
+		DataSize.push_back(ArraySize*IntSize);
 		ArraySize+=StepExp;
-		cout<<AccessTime<<endl;
-
 	}
 
-	write_data(DataSize,TimeAccess);
+	write_data(DataSize, TimeAccessRandom, TimeAccessSerial);
 	return 0;
 }
