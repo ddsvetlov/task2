@@ -234,17 +234,12 @@ void write_data(std::list<int> DataSize, std::list<int> RandomTime,  std::list<i
     y2.close();
 }
 
-
-int main() {
+void run_experiment(int ArraySize,int StepSize,int NumberExp,int StepExp){
 	const int IntSize=sizeof(int);
-	int ArraySize = 1;
-	int StepSize = 1;
-	int NumberExp = 50;
-	int StepExp = 1000;
-	long int AccessTime = 0;
 	std::list<int> TimeAccessRandom;
 	std::list<int> DataSize;
 	std::list<int> TimeAccessSerial;
+	long int AccessTime = 0;
 	const bool RandomType = true;
 	const bool SerialType = false;
 
@@ -260,7 +255,17 @@ int main() {
 		DataSize.push_back(ArraySize*IntSize);
 		ArraySize+=StepExp;
 	}
-
 	write_data(DataSize, TimeAccessRandom, TimeAccessSerial);
+}
+
+
+int main() {
+	
+	int ArraySize = 1;
+	int StepSize = 1;
+	int NumberExp = 50;
+	int StepExp = 1000;
+	run_experiment(ArraySize, StepSize, NumberExp, StepExp);
+	
 	return 0;
 }
