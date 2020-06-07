@@ -22,18 +22,17 @@ long int get_time(int ArraySize,int StepSize, bool AccessType) {
 	// start Timer
 	clock_gettime (CLOCK_REALTIME, &mt1);
 
-	if (AccessType){
+	if (AccessType=true){
 		// get Access to random Element
 		for (int i=0; i<ArraySize;i+=StepSize){
 			RandomIndex=rand()%ArraySize;
 			Current=Array[RandomIndex];
 		}
-	}	
-	else {
-		for (int i=0; i<ArraySize;i+=StepSize){
-			Current=Array[i];
+	}	else {
+			for (int i=0; i<ArraySize;i+=StepSize){
+				Current=Array[i];
+			}
 		}
-	}
 	// end Timer
 	clock_gettime (CLOCK_REALTIME, &mt2);
 
@@ -95,7 +94,6 @@ void run_experiment(int ArraySize,int StepSize,int NumberExp,int StepExp,bool No
 	else{
 		ThreadsData[ThreadID]= make_pair(DataSize,TimeAccessRandom);
 	} 
-
 }
 
 void write_data_threads(int QuantityThread, int ArraySize){
@@ -123,16 +121,15 @@ void run_in_threads(int ArraySize, int StepSize, int NumberExp, int StepExp, int
 		Threadvector[i].join();
 	}
 
-	write_data_threads(QuantityThread,NumberExp*StepExp);
-
+	write_data_threads(QuantityThread,NumberExp);
 }
 
 int main() {
 	
-	int ArraySize = 1;
+	int ArraySize = 10;
 	int StepSize = 1;
-	int NumberExp = 50;
-	int StepExp = 1;
+	int NumberExp = 10;
+	int StepExp = 100000;
 	bool NoThreadMode=true;
 	int ThreadID =0;
 
@@ -143,7 +140,6 @@ int main() {
 	int QuantityThread = 8;
 	for (int i=2;i<=QuantityThread;i*=2){
 		run_in_threads(ArraySize, StepSize, NumberExp, StepExp,i);
-
 	}
 
 	return 0;
