@@ -1,28 +1,44 @@
 import matplotlib.pyplot as plt
-import numpy as np
 
-x = open('x.txt',"r")
+for i in (2,4,8):
+  x = open('x_thread_' + str(i) + '.txt', 'r')
+  x=x.read()
+  x=(x.split(',')[:-1])
+  x=[int(i) for i in x]
+
+  y = open('y_thread_' + str(i) + '.txt', 'r')
+  y=y.read()
+  y=(y.split(',')[:-1])
+  y=[float(i) for i in y]
+
+  plt.plot(x,y, label='thread_' + str(i))
+
+x = open('x_random.txt', 'r')
 x=x.read()
 x=(x.split(',')[:-1])
 x=[int(i) for i in x]
-# x=np.array(x)
 
-y1 = open('y1.txt',"r")
-y1=y1.read()
-y1=(y1.split(',')[:-1])
-y1=[float(i) for i in y1]
-# y1=np.array(y1)
+y = open('y_random.txt', 'r')
+y=y.read()
+y=(y.split(',')[:-1])
+y=[float(i) for i in y]
 
-y2 = open('y2.txt',"r")
-y2=y2.read()
-y2=(y2.split(',')[:-1])
-y2=[float(i) for i in y2]
-# y2=np.array(y2)
+plt.plot(x,y, label='random')
 
-print(len(x))
-print(len(y1))
-print(len(y2))
 
-plt.plot(x,y1)
-plt.plot(x,y2)
+x = open('x_serial.txt', 'r')
+x=x.read()
+x=(x.split(',')[:-1])
+x=[int(i) for i in x]
+
+y = open('y_serial.txt', 'r')
+y=y.read()
+y=(y.split(',')[:-1])
+y=[float(i) for i in y]
+
+plt.plot(x,y, label='serial')
+
+
+plt.legend()
+# plt.savefig("benchmark.png")
 plt.show()

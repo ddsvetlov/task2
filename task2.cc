@@ -1,54 +1,11 @@
-
-
-// // DEPENDENT OF ACCESS TIME TO MEMORY ON THE NUMBER OF THREADS
-
-// // helper func (for threading) to
-// // check time to access for each element in array
-// void array_access(int id)
-// {
-//     int sum = 0;
-//     ull t1 = rdtsc();
-//     for (int i = 0; i < static_array_size; i++)
-//     {
-//         sum += static_array[i];
-//     }
-//     ull t2 = rdtsc();
-//     thread_time[id] = t2 - t1;
-// }
-
-// // func to dependent of access time to memory on the number of threads
-// void thread_access()
-// {
-// 	// fill array
-//     for (int i = 0; i < 1024; i++)
-//     {
-//         static_array[i] = rand() % (static_array_size - 1);
-//     }
-//     // threating
-//     for (int i = 0; i < thread_num; i++)
-//     {
-//         std::thread my_thread(array_access, i);
-//         my_thread.join();
-//     }
-//     // check time
-//     for (int i = 0; i < thread_num; i++)
-//     {
-//         cout << thread_time[i] << endl;
-//     }
-// }
-
-
-//     // third task
-//     // call func to dependent of access time to memory on the number of threads
-//     thread_access();
-
 #include <iostream>
 #include <time.h> 
 #include <fstream>
-#include <list>
+#include <vector>
+#include <thread>
 
 using namespace std;
-typedef list<int> LISTINT;
+typedef vector<int> vectorINT;
 
 long int get_time(int ArraySize,int StepSize, bool AccessType) {
 	// data
@@ -81,20 +38,17 @@ long int get_time(int ArraySize,int StepSize, bool AccessType) {
 	clock_gettime (CLOCK_REALTIME, &mt2);
 
 	long int AccessTime=1000000000*(mt2.tv_sec - mt1.tv_sec)+(mt2.tv_nsec - mt1.tv_nsec);
-	// cout << sizeof(*a) * ArraySize << endl;
-	return AccessTime/ArraySize;
+	return AccessTime/ArraySize/StepSize;
 }
 
-void write_data(std::list<int> DataSize, std::list<int> RandomTime,  std::list<int> SerialTime){
-	ofstream x, y1, y2;
+void write_data(std::vector<int> DataSize, std::vector<int> RandomTime,string Name){
 
-    x.open("x.txt", fstream::app);
-    y1.open("y1.txt", fstream::app);
-    y2.open("y2.txt", fstream::app);
+	ofstream x, y;
 
+    x.open(string("x")+Name+string(".txt"), fstream::app);
+    y.open(string("y")+Name+string(".txt"), fstream::app);
 
-    LISTINT::iterator i;
-
+    vectorINT::iterator i;
     for (i = DataSize.begin(); i != DataSize.end(); ++i)
     {
         x << *i << ",";
@@ -102,24 +56,22 @@ void write_data(std::list<int> DataSize, std::list<int> RandomTime,  std::list<i
 
     for (i = RandomTime.begin(); i != RandomTime.end(); ++i)
     {
-        y1 << *i << ",";
+        y << *i << ",";
     }
 
-    for (i = SerialTime.begin(); i != SerialTime.end(); ++i)
-    {
-        y2 << *i << ",";
-    }
-    
     x.close();
-    y1.close();
-    y2.close();
+    y.close();
 }
 
-void run_experiment(int ArraySize,int StepSize,int NumberExp,int StepExp){
+int MaxThreads = 10;
+pair<vector<int>,vector<int>>* ThreadsData= new pair<vector<int>,vector<int>> [MaxThreads];
+
+void run_experiment(int ArraySize,int StepSize,int NumberExp,int StepExp,bool NoThreadMode,int ThreadID){
 	const int IntSize=sizeof(int);
-	std::list<int> TimeAccessRandom;
-	std::list<int> DataSize;
-	std::list<int> TimeAccessSerial;
+	std::vector<int> TimeAccessRandom;
+	std::vector<int> DataSize;
+	std::vector<int> TimeAccessSerial;
+
 	long int AccessTime = 0;
 	const bool RandomType = true;
 	const bool SerialType = false;
@@ -136,18 +88,63 @@ void run_experiment(int ArraySize,int StepSize,int NumberExp,int StepExp){
 		DataSize.push_back(ArraySize*IntSize);
 		ArraySize+=StepExp;
 	}
-	write_data(DataSize, TimeAccessRandom, TimeAccessSerial);
+	if (NoThreadMode){
+		write_data(DataSize, TimeAccessRandom, string("_random"));
+		write_data(DataSize, TimeAccessSerial, string("_serial"));
+	}
+	else{
+		ThreadsData[ThreadID]= make_pair(DataSize,TimeAccessRandom);
+	} 
+
 }
 
+void write_data_threads(int QuantityThread, int ArraySize){
+	vector<int> AVGTime(ArraySize, 0);
+	for (int i=0;i<ArraySize;i++){
+		for(int j=0;j<QuantityThread;j++){
+			AVGTime[i]+=ThreadsData[j].second[i]/QuantityThread;
+		}
+	}
+	vector<int> DataSize = ThreadsData[0].first;
+	string Name = string("_thread_")+to_string(QuantityThread);
+	write_data(DataSize, AVGTime, Name);
+}
+
+void run_in_threads(int ArraySize, int StepSize, int NumberExp, int StepExp, int QuantityThread){
+	
+	thread* Threadvector = new thread[QuantityThread];
+	bool NoThreadMode=false;
+	for(int i =0; i<QuantityThread;i++) {
+		thread CurrentThread(run_experiment, ArraySize, StepSize, NumberExp, StepExp,NoThreadMode,i);
+		Threadvector[i] = move(CurrentThread);
+	}
+
+	for(int i =0; i<QuantityThread;i++) {
+		Threadvector[i].join();
+	}
+
+	write_data_threads(QuantityThread,NumberExp*StepExp);
+
+}
 
 int main() {
 	
 	int ArraySize = 1;
 	int StepSize = 1;
 	int NumberExp = 50;
-	int StepExp = 1000;
+	int StepExp = 1;
+	bool NoThreadMode=true;
+	int ThreadID =0;
 
-	run_experiment(ArraySize, StepSize, NumberExp, StepExp);
-	
+	// task 1-2
+	run_experiment(ArraySize, StepSize, NumberExp, StepExp, NoThreadMode,ThreadID);
+
+	// task 3
+	int QuantityThread = 8;
+	for (int i=2;i<=QuantityThread;i*=2){
+		run_in_threads(ArraySize, StepSize, NumberExp, StepExp,i);
+
+	}
+
 	return 0;
 }
