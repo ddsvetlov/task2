@@ -7,6 +7,13 @@
 using namespace std;
 typedef vector<int> vectorINT;
 
+void write_current(int Current){
+	ofstream cur;
+	cur.open("current.txt",fstream::app);
+    cur<<Current;
+    cur.close();
+}
+
 long int get_time(int ArraySize,int StepSize, bool AccessType) {
 	// data
 	int *Array = new int[ArraySize];
@@ -25,12 +32,14 @@ long int get_time(int ArraySize,int StepSize, bool AccessType) {
 	if (AccessType=true){
 		// get Access to random Element
 		for (int i=0; i<ArraySize;i+=StepSize){
-			RandomIndex=rand()%ArraySize;
+			RandomIndex=Current+rand()%(ArraySize-Current);
 			Current=Array[RandomIndex];
+			write_current(Current);
 		}
 	}	else {
 			for (int i=0; i<ArraySize;i+=StepSize){
 				Current=Array[i];
+				write_current(Current);
 			}
 		}
 	// end Timer
