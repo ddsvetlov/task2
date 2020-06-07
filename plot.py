@@ -40,5 +40,5 @@ plt.plot(x,y, label='serial')
 
 
 plt.legend()
-# plt.savefig("benchmark.png")
-plt.show()
+plt.savefig("benchmark.png")
+
