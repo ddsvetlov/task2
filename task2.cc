@@ -150,13 +150,13 @@ int main() {
 
 
     QuantityThread*=2;
-    // Run experiment with random access and 4 thread
+    // Random Access 4 Thread
     pair<vector<int>, vector<long double>> Random4Threads = run_experiment(RandomModeON, QuantityThread);
     write_data(Random4Threads.first, Random4Threads.second, create_name(RandomModeON, QuantityThread));
 
 
     QuantityThread*=2;
-    // Run experiment with random access and 8 thread
+    // Random Access 8 Thread
     pair<vector<int>, vector<long double>> Random8Threads = run_experiment(RandomModeON, QuantityThread);
     write_data(Random8Threads.first, Random8Threads.second, create_name(RandomModeON, QuantityThread));
 	return 0;
