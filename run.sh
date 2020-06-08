@@ -1,4 +1,5 @@
-rm -rf a.out *.txt
-g++ -pthread -O3 -march=native task2.cc
-./a.out
-python3 plot.py 
+rm -rf *.txt *.png *.out
+g++ -pthread -O0 -o task2.out task2.cc
+./task2.out
+python3 plot.py
+

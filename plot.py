@@ -1,42 +1,32 @@
 import matplotlib.pyplot as plt
 
-for i in (2,4,8):
-  x = open('x_thread_' + str(i) + '.txt', 'r')
-  x=x.read()
-  x=(x.split(',')[:-1])
-  x=[int(i) for i in x]
-
-  y = open('y_thread_' + str(i) + '.txt', 'r')
-  y=y.read()
-  y=(y.split(',')[:-1])
-  y=[float(i) for i in y]
-
-  plt.plot(x,y, label='thread_' + str(i))
-
-x = open('x_random.txt', 'r')
-x=x.read()
-x=(x.split(',')[:-1])
-x=[int(i) for i in x]
-
-y = open('y_random.txt', 'r')
-y=y.read()
-y=(y.split(',')[:-1])
-y=[float(i) for i in y]
-
-plt.plot(x,y, label='random')
+for i in (1,2,4,8):
+    x=[]
+    y=[]
+    fil = open('random_' + str(i) + '_threads.txt', 'r')
+    for elem in fil:
+        print(elem)
+        elem=elem.replace('\n','')
+        data = elem.split(',')
+    
+        x.append(int(data[0]))
+        y.append(int(data[1]))
+    plt.plot(x,y, label='random_thread_' + str(i))   
 
 
-x = open('x_serial.txt', 'r')
-x=x.read()
-x=(x.split(',')[:-1])
-x=[int(i) for i in x]
+x=[]
+y=[]
+fil = open('serial_' + str(1) + '_threads.txt', 'r')
+for elem in fil:
+    print(elem)
+    elem=elem.replace('\n','')
+    data = elem.split(',')
 
-y = open('y_serial.txt', 'r')
-y=y.read()
-y=(y.split(',')[:-1])
-y=[float(i) for i in y]
+    x.append(int(data[0]))
+    y.append(int(data[1]))
+plt.plot(x,y, label='serial_thread_' + str(1))   
 
-plt.plot(x,y, label='serial')
+
 
 
 plt.legend()
