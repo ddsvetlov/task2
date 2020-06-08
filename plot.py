@@ -30,5 +30,4 @@ plt.plot(x,y, label='serial_thread_' + str(1))
 
 
 plt.legend()
-# plt.savefig("benchmark.png")
 plt.show()
