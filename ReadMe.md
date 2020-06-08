@@ -1,5 +1,5 @@
 App to find cash level (L1,L2,L3). 
-To start install req: matplotlib for python
+To start install req: matplotlib for python.
 How to start:
 ```
 chmod +x run.sh
